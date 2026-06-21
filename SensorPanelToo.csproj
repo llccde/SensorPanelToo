@@ -12,4 +12,10 @@
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="SensorPanelToo.Tests\**" />
+    <None Remove="SensorPanelToo.Tests\**" />
+    <EmbeddedResource Remove="SensorPanelToo.Tests\**" />
+  </ItemGroup>
+
 </Project>

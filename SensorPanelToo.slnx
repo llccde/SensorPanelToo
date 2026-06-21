@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="SensorPanelToo.csproj" />
+  <Project Path="SensorPanelToo.Tests/SensorPanelToo.Tests.csproj" />
 </Solution>
