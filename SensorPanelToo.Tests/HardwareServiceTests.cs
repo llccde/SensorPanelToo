@@ -24,8 +24,6 @@ public class HardwareServiceFixture : IDisposable
 
     public void Dispose()
     {
-        while (Services.HardwareService.Instance.ReferenceCount > 0)
-            Services.HardwareService.Instance.Stop();
     }
 }
 
@@ -91,27 +89,6 @@ public class HardwareServiceIntegrationTests
             Assert.NotEmpty(root.Name);
             Assert.NotNull(root.Children);
         }
-    }
-
-    [Fact]
-    public void ReferenceCounting_MultipleStartStop()
-    {
-        var svc = Services.HardwareService.Instance;
-        int initialCount = svc.ReferenceCount;
-        Assert.True(initialCount > 0);
-
-        svc.Start();
-        Assert.Equal(initialCount + 1, svc.ReferenceCount);
-
-        svc.Start();
-        Assert.Equal(initialCount + 2, svc.ReferenceCount);
-
-        svc.Stop();
-        Assert.Equal(initialCount + 1, svc.ReferenceCount);
-        Assert.True(svc.IsRunning);
-
-        svc.Stop();
-        Assert.Equal(initialCount, svc.ReferenceCount);
     }
 
     [Fact]

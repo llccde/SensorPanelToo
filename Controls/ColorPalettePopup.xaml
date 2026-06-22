@@ -1,0 +1,44 @@
+<Popup x:Class="SensorPanelToo.Controls.ColorPalettePopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        AllowsTransparency="True" PopupAnimation="Fade"
+        StaysOpen="True">
+    <Border Background="White" BorderBrush="#CCC" BorderThickness="1" CornerRadius="4"
+            Padding="10" Width="260">
+        <StackPanel>
+            <!-- Palette grid -->
+            <ItemsControl x:Name="PaletteGrid" Margin="0,0,0,8">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="10" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="22" Height="22" Margin="1"
+                                Background="{Binding Brush}"
+                                BorderBrush="#999" BorderThickness="0.5"
+                                Cursor="Hand" MouseLeftButtonDown="OnColorClick" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Custom hex input -->
+            <Grid Margin="0,4,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="#" Foreground="#666" VerticalAlignment="Center"
+                           FontSize="13" Margin="0,0,4,0" />
+                <TextBox x:Name="HexBox" Grid.Column="1" Text="FF6644"
+                         Height="24" FontSize="13" FontFamily="Consolas"
+                         KeyDown="HexBox_KeyDown" />
+                <Border x:Name="PreviewSwatch" Grid.Column="2"
+                        Width="28" Height="24" Margin="6,0,0,0"
+                        Background="#FF6644" BorderBrush="#999" BorderThickness="0.5" />
+            </Grid>
+        </StackPanel>
+    </Border>
+</Popup>

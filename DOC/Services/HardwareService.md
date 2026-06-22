@@ -4,7 +4,7 @@
 封装 LibreHardwareMonitor，全局单例，为整个应用提供统一的硬件传感器数据获取入口。
 
 ## 职责边界
-- 负责：启动/停止 LHM Computer，定时轮询传感器，缓存数据，构建传感器树
+- 负责：启动 LHM Computer、定时轮询传感器、缓存数据、构建传感器树
 - 不负责：UI 渲染、配置读写、绑定验证
 
 ## 依赖
@@ -12,66 +12,64 @@
 - `SensorPanelToo.Models.SensorValue`、`SensorValueType`、`SensorTreeNode`
 
 ## 被谁使用
-- `App.xaml.cs`（后续）—— 持有全局单例引用
-- `SensorPanelViewModel`（后续）—— 读取传感器数据
-- `BindingSelectorViewModel`（后续）—— 获取传感器树
-- 本类的使用者通过 `HardwareService.Instance` 访问
+- `HardwareSelectDialog` —— 启动时选择硬件类型
+- `ComponentEditorWindow` —— 传感器树选择 + 实时数据
+- 后续 `SensorPanelViewModel` —— 数据源
 
 ## 公开 API
 
 | 成员 | 签名 | 说明 |
 |------|------|------|
 | `Instance` | `static HardwareService` | 全局唯一实例 |
-| `Start()` | `void` | 引用计数 +1，首次调用启动 LHM 和后台线程 |
-| `Stop()` | `void` | 引用计数 -1，归零时关闭 LHM，清空缓存 |
+| `Start(cpu, gpu, memory, motherboard, network, storage, controller)` | `void` | 启动服务。首次创建 Computer；再调且 flags 变化则关旧开新；flags 不变则无操作。所有参数有默认值（cpu/memory/storage=true，其余=false） |
 | `IsRunning` | `bool` | 后台线程是否运行中 |
-| `ReferenceCount` | `int` | 当前引用计数 |
 | `GetAllSensors()` | `Dictionary<string, SensorModel>` | 返回当前缓存的快照副本 |
 | `GetSensor(bindingId)` | `SensorModel?` | 按 BindingId 查找单个传感器 |
 | `GetSensorTree()` | `List<SensorTreeNodeModel>` | 构建硬件→子硬件→传感器的三层树 |
 | `SensorsUpdated` | `event Action?` | 每次轮询完成后触发 |
 | `GetUnit(sensorType)` | `static string` (internal) | SensorType 到单位的映射 |
+| `GetSensorTypeBounds(type, min, max)` | `static (float,float)` (internal) | 按传感器类型返回合理上下限 |
 
 ## 关键设计决策
 
-### 单例 + 引用计数
-- `Start()` 首次调用时才 `new Computer()` + `Open()`，避免应用启动时不必要的开销
-- 多个 `SensorPanel` 可共用，各自调用 Start/Stop，引用计数归零才真正释放资源
-- `Stop()` 使用 `Interlocked.Decrement` 后检查返回值，防止并发下计数值变负数
+### 传感器树缓存 + 原子更新块
+- 用 `object` 锁替代 `ReaderWriterLockSlim`，锁粒度更细、更稳定
+- 传感器树在 `Start()` 中构建并缓存到 `_cachedTree`，`GetSensorTree()` 返回缓存副本，完全无锁，消除 UI 端阻塞
+- `UpdateLoop` 中 `Accept` 和 `RefreshCacheCore` 合并为一个 `lock` 块，消除 TOC/TOU 空隙，杜绝 `Start()` 中途替换 `_computer` 引发的不一致
+- `GetAllSensors()` / `GetSensor()` 始终无锁（直接读 `ConcurrentDictionary`）
+- `VisitHardware` 中 `h.Update()` 通过 `Task.Run` + 2s 超时执行，防止 StorageDevice 等硬件驱动无限阻塞导致锁死
+
+### 无引用计数，无 Stop
+- `Start()` 唯一入口，调用即启动，不跟踪调用方数量
+- 无 `Stop()` 方法。进程退出时由 `Dispose()` 或 OS 清理
+- 再次调用 `Start(gpu: true)` 若传入了新增硬件类型，自动关闭旧 Computer 并重建
+
+### 所有硬件类型均可选
+- `Start()` 接收 7 个 bool 参数：cpu/gpu/memory/motherboard/network/storage/controller
+- cpu/memory/storage 默认 true，其余默认 false，兼容旧调用
+- 全部取消仍可启动（仅有缓存，无传感器数据）
 
 ### BindingId 使用 LHM 原生 Identifier
-- 不自行拼接（如 `Cpu-Core#1-Load`），因为硬件名可能含 `-` 导致解析歧义
-- 直接使用 `sensor.Identifier.ToString()`，格式如 `/intelcpu/0/load/1`
+- 不自行拼接，格式如 `/intelcpu/0/load/1`
 - 天然唯一，包含完整硬件层级
 
-### 线程安全
-- `_sensorCache` 用 `ConcurrentDictionary`，读写无锁
-- `_computer` 用 `lock(_computerLock)` 保护，LHM 的 Computer 本身不是线程安全的
-- 后台线程每 500ms：lock → Accept(UpdateVisitor) → 遍历传感器 → 更新 cache → 释放锁 → 触发事件
+### 传感器边界策略
+- Load/Control/Level/Humidity → 固定 0–100
+- Temperature → 上界 floor 100°C
+- 其他 → 按类型给合理 floor
 
 ### 后台线程而非 DispatcherTimer
-- 服务层不应依赖 UI 线程
-- System.Threading.Timer 或 Thread + CancellationToken 都可以
+- 服务层不依赖 UI 线程
 - 事件在后台线程触发，消费者需自行 `Dispatcher.Invoke` 回 UI 线程
 
 ## 示例
 
 ```csharp
-// 启动
-HardwareService.Instance.Start();
+HardwareService.Instance.Start(gpu: true, motherboard: true);
 
-// 读取
 var cpuLoad = HardwareService.Instance.GetSensor("/intelcpu/0/load/1");
-Console.WriteLine(cpuLoad?.DisplayText);  // "45.2%"
+Console.WriteLine(cpuLoad?.DisplayText);
 
-// 获取全部
-var all = HardwareService.Instance.GetAllSensors();
-foreach (var kvp in all)
-    Console.WriteLine($"{kvp.Key} = {kvp.Value.DisplayText}");
-
-// 获取树（用于绑定选择器 UI）
-var tree = HardwareService.Instance.GetSensorTree();
-
-// 停止
-HardwareService.Instance.Stop();
+// 运行时加网络监控
+HardwareService.Instance.Start(network: true);
 ```

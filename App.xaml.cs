@@ -1,14 +1,17 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
+using System.Windows.Threading;
 
-namespace SensorPanelToo
+namespace SensorPanelToo;
+
+public partial class App : Application
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    public App()
     {
+        DispatcherUnhandledException += (s, e) =>
+        {
+            MessageBox.Show($"Unhandled error: {e.Exception.Message}\n\n{e.Exception.StackTrace}",
+                "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            e.Handled = true;
+        };
     }
-
 }

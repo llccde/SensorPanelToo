@@ -1,0 +1,15 @@
+<UserControl x:Class="SensorPanelToo.Controls.ProgressBarControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Border x:Name="OuterBorder" BorderThickness="0" CornerRadius="0"/>
+        <Grid x:Name="LayoutRoot">
+            <ProgressBar x:Name="ProgressBar"
+                         Minimum="0" Maximum="100" Value="0"
+                         BorderThickness="0" />
+            <TextBlock x:Name="ValueText" Text="N/A"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Foreground="#00FF88" FontFamily="Consolas" FontSize="12" />
+        </Grid>
+    </Grid>
+</UserControl>
