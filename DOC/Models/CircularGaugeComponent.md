@@ -24,7 +24,9 @@
 | `NeedleColor` | `string` | `"#FF0000"` | 指针颜色 |
 | `NeedleWidth` | `double` | 2.5 | 指针线宽 |
 | `NeedleStyle` | `NeedleStyle` | `Metal` | 指针样式（预留） |
-| `RingThickness` | `double` | 12 | 环厚度 |
+| `RingThickness` | `double` | 14 | 环厚度 |
+| `TrackColor` | `string` | `"#DCDCDC"` | 轨道底色 |
+| `HideTrack` | `bool` | `false` | 是否隐藏轨道 |
 | `ShowCenterValue` | `bool` | `true` | 是否显示中心数值 |
 | `TextColor` | `string` | `"#FFFFFF"` | 中心数值文字颜色 |
 
@@ -35,6 +37,7 @@
 - 没有边框/圆角属性（环形不需要）
 - 圆形组件，长宽相等
 - `NeedleStyle` 枚举预留，当前版本统一绘制实线指针
+- 轨道默认浅灰 `#DCDCDC`，可配置颜色和显隐
 
 ## 示例
 ```csharp

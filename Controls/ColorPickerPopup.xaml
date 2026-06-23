@@ -1,0 +1,108 @@
+<Popup x:Class="SensorPanelToo.Controls.ColorPickerPopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        AllowsTransparency="True" PopupAnimation="Fade"
+        StaysOpen="True" Placement="Right" HorizontalOffset="6">
+    <Border Background="White" BorderBrush="#CCC" BorderThickness="1" CornerRadius="4" Padding="10" Width="280"
+            KeyDown="Popup_KeyDown" Focusable="True">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="12"/>
+                <RowDefinition Height="200"/>
+                <RowDefinition Height="12"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="24"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Row="0" Grid.ColumnSpan="5" Height="32" CornerRadius="3"
+                    Background="{Binding ElementName=SwatchPreview, Path=Background}"
+                    BorderBrush="#DDD" BorderThickness="1"/>
+
+            <Grid Grid.Row="2" Grid.Column="0" Width="200" Height="200" ClipToBounds="True"
+                  PreviewMouseLeftButtonDown="SvPlane_MouseDown"
+                  PreviewMouseMove="SvPlane_MouseMove"
+                  PreviewMouseLeftButtonUp="SvPlane_MouseUp">
+                <Rectangle x:Name="SvHueRect" Width="200" Height="200">
+                    <Rectangle.Fill>
+                        <SolidColorBrush x:Name="SvHueBrush" Color="#FF0000"/>
+                    </Rectangle.Fill>
+                </Rectangle>
+                <Rectangle Width="200" Height="200">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Offset="0" Color="White"/>
+                            <GradientStop Offset="1" Color="Transparent"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+                <Rectangle Width="200" Height="200">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                            <GradientStop Offset="0" Color="Black"/>
+                            <GradientStop Offset="1" Color="Transparent"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+                <Ellipse x:Name="SvMarker" Width="10" Height="10" Fill="Transparent"
+                         Stroke="White" StrokeThickness="2" RenderTransformOrigin="0.5,0.5"
+                         HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
+            </Grid>
+
+            <Grid Grid.Row="2" Grid.Column="2" Width="24" Height="200" ClipToBounds="True"
+                  PreviewMouseLeftButtonDown="HueBar_MouseDown"
+                  PreviewMouseMove="HueBar_MouseMove"
+                  PreviewMouseLeftButtonUp="HueBar_MouseUp">
+                <Rectangle Width="24" Height="200">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                            <GradientStop Offset="0.00" Color="Red"/>
+                            <GradientStop Offset="0.17" Color="Yellow"/>
+                            <GradientStop Offset="0.33" Color="#00FF00"/>
+                            <GradientStop Offset="0.50" Color="Cyan"/>
+                            <GradientStop Offset="0.67" Color="Blue"/>
+                            <GradientStop Offset="0.83" Color="Magenta"/>
+                            <GradientStop Offset="1.00" Color="Red"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+                <Border x:Name="HueMarker" Width="24" Height="4" Background="White"
+                        BorderBrush="#333" BorderThickness="1"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Top" IsHitTestVisible="False"/>
+            </Grid>
+
+            <StackPanel Grid.Row="2" Grid.Column="4" VerticalAlignment="Top">
+                <Border x:Name="SwatchOld" Width="28" Height="28" CornerRadius="3"
+                        BorderBrush="#DDD" BorderThickness="1" Margin="0,0,0,4"
+                        Background="White" ToolTip="原始颜色"/>
+                <Border x:Name="SwatchPreview" Width="28" Height="28" CornerRadius="3"
+                        BorderBrush="#DDD" BorderThickness="1"
+                        Background="#FF0000" ToolTip="当前颜色"/>
+            </StackPanel>
+
+            <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="#" FontSize="14" Foreground="#888" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                    <TextBox x:Name="HexBox" Grid.Column="1" Height="24" FontSize="13" Text="FF0000"
+                             KeyDown="HexBox_KeyDown" VerticalContentAlignment="Center"/>
+                    <Button Grid.Column="2" Content="确定" Width="50" Height="26" FontSize="12"
+                            Click="OkBtn_Click" Margin="6,0,4,0"/>
+                    <Button Grid.Column="3" Content="取消" Width="50" Height="26" FontSize="12"
+                            Click="CancelBtn_Click"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Popup>

@@ -24,7 +24,9 @@ public class CircularGaugeComponent : Component
     public string NeedleColor { get; set; } = "#FF0000";
     public double NeedleWidth { get; set; } = 2.5;
     public NeedleStyle NeedleStyle { get; set; } = NeedleStyle.Metal;
-    public double RingThickness { get; set; } = 12;
+    public double RingThickness { get; set; } = 14;
+    public string TrackColor { get; set; } = "#DCDCDC";
+    public bool HideTrack { get; set; }
     public bool ShowCenterValue { get; set; } = true;
     public string TextColor { get; set; } = "#FFFFFF";
 

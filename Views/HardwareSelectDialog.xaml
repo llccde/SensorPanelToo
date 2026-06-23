@@ -1,7 +1,7 @@
 <Window x:Class="SensorPanelToo.Views.HardwareSelectDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Hardware Monitor Setup" Height="440" Width="360"
+        Title="硬件监控设置" Height="440" Width="360"
         Background="#F5F5F5" WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize" WindowStyle="ToolWindow" Topmost="True">
     <Grid Margin="20">
@@ -10,24 +10,24 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Margin="0,0,0,16">
-            <TextBlock Text="Hardware Monitor Setup" FontSize="16" FontWeight="Bold" Foreground="#333"/>
-            <TextBlock Text="Select hardware types to monitor:" FontSize="12" Foreground="#555" Margin="0,4,0,0"/>
+            <TextBlock Text="硬件监控设置" FontSize="16" FontWeight="Bold" Foreground="#333"/>
+            <TextBlock Text="选择要监控的硬件类型：" FontSize="12" Foreground="#555" Margin="0,4,0,0"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Margin="4,0">
-            <CheckBox x:Name="ChkCpu" Content="CPU" IsChecked="True" Margin="0,0,0,10" FontSize="13"/>
-            <CheckBox x:Name="ChkMemory" Content="Memory" IsChecked="True" Margin="0,0,0,10" FontSize="13"/>
-            <CheckBox x:Name="ChkStorage" Content="Storage (may be slow)" IsChecked="True" Margin="0,0,0,10" FontSize="13"/>
-            <CheckBox x:Name="ChkGpu" Content="GPU (slow to initialize)" IsChecked="False" Margin="0,0,0,10" FontSize="13"/>
-            <CheckBox x:Name="ChkMotherboard" Content="Motherboard Sensors" IsChecked="False" Margin="0,0,0,10" FontSize="13"/>
-            <CheckBox x:Name="ChkNetwork" Content="Network Adapters" IsChecked="False" Margin="0,0,0,10" FontSize="13"/>
-            <CheckBox x:Name="ChkController" Content="Storage Controllers" IsChecked="False" Margin="0,0,0,10" FontSize="13"/>
+            <CheckBox x:Name="ChkCpu" Content="CPU 处理器" IsChecked="True" Margin="0,0,0,10" FontSize="13"/>
+            <CheckBox x:Name="ChkMemory" Content="内存" IsChecked="True" Margin="0,0,0,10" FontSize="13"/>
+            <CheckBox x:Name="ChkStorage" Content="存储设备（可能较慢）" IsChecked="False" Margin="0,0,0,10" FontSize="13"/>
+            <CheckBox x:Name="ChkGpu" Content="GPU 显卡（初始化较慢）" IsChecked="False" Margin="0,0,0,10" FontSize="13"/>
+            <CheckBox x:Name="ChkMotherboard" Content="主板传感器" IsChecked="False" Margin="0,0,0,10" FontSize="13"/>
+            <CheckBox x:Name="ChkNetwork" Content="网络适配器" IsChecked="False" Margin="0,0,0,10" FontSize="13"/>
+            <CheckBox x:Name="ChkController" Content="存储控制器" IsChecked="False" Margin="0,0,0,10" FontSize="13"/>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-            <Button x:Name="StartBtn" Content="Start" Width="80" Height="30" FontSize="13" FontWeight="Bold"
+            <Button x:Name="StartBtn" Content="启动" Width="80" Height="30" FontSize="13" FontWeight="Bold"
                     Click="StartBtn_Click" Background="#0066CC" Foreground="White" BorderThickness="0"/>
-            <Button Content="Skip" Width="60" Height="30" FontSize="13"
+            <Button Content="跳过" Width="60" Height="30" FontSize="13"
                     Click="SkipBtn_Click" Margin="8,0,0,0"/>
         </StackPanel>
     </Grid>

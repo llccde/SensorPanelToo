@@ -79,11 +79,14 @@ public partial class CircularGaugeControl : UserControl
         double sweepAngle = comp.SweepAngle;
 
         // Track arc
-        var trackPen = new Pen(new SolidColorBrush(Color.FromRgb(220, 220, 220)), ringThickness)
+        if (!comp.HideTrack)
         {
-            StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round
-        };
-        DrawArc(dc, trackPen, new Point(cx, cy), outerRadius - ringThickness / 2, startAngle, startAngle + sweepAngle);
+            var trackPen = new Pen(new SolidColorBrush(ParseColor(comp.TrackColor)), ringThickness)
+            {
+                StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round
+            };
+            DrawArc(dc, trackPen, new Point(cx, cy), outerRadius - ringThickness / 2, startAngle, startAngle + sweepAngle);
+        }
 
         // Value arc
         double percent = GetPercent();
@@ -144,9 +147,15 @@ public partial class CircularGaugeControl : UserControl
 
     private static void DrawArc(DrawingContext dc, Pen pen, Point center, double radius, double startDeg, double endDeg)
     {
+        double sweep = endDeg - startDeg;
+        if (Math.Abs(sweep) < 0.001) return;
+        if (Math.Abs(sweep) >= 360)
+        {
+            dc.DrawEllipse(null, pen, center, radius, radius);
+            return;
+        }
         double sr = DegreesToRadians(startDeg), er = DegreesToRadians(endDeg);
-        if (Math.Abs(er - sr) < 0.001) return;
-        bool large = (endDeg - startDeg) > 180;
+        bool large = sweep > 180;
         double sx = center.X + Math.Cos(sr) * radius, sy = center.Y + Math.Sin(sr) * radius;
         double ex = center.X + Math.Cos(er) * radius, ey = center.Y + Math.Sin(er) * radius;
         var geo = new StreamGeometry();

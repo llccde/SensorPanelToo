@@ -7,22 +7,26 @@
 | 框架 | .NET 8 + WPF |
 | 硬件监控 | LibreHardwareMonitorLib 0.9.6 |
 | 测试 | xUnit 2.5.3 |
-| UI 模式 | MVVM（计划中） |
+| UI 模式 | Code-behind（MVVM 计划中） |
 
 ## 当前进度
 
-已完成 Task 3–4：
+已完成的模块：
 
 | 已完成 | 文件 |
 |--------|------|
-| 数据模型 | `Models/SensorValue.cs` |
+| 数据模型 | `Models/SensorValue.cs`, `Models/Component.cs` + 5 派生类, `Models/DashboardConfig.cs` |
 | 硬件服务 | `Services/HardwareService.cs` |
-| 测试项目 | `SensorPanelToo.Tests/`（7/7 通过） |
-| 组件数据模型 | `Models/Component.cs` + 4 派生类 |
-| 组件渲染控件 | `Controls/ProgressBarControl` 等 4 个 + `SensorTreeSelector` + `ColorPalettePopup` |
 | 配置服务 | `Services/ConfigService.cs` |
-| 编辑器窗口 | `Views/ComponentEditorWindow.xaml/.cs` |
+| 测试项目 | `SensorPanelToo.Tests/` |
+| 组件渲染控件 | `Controls/ProgressBarControl`, `CircularGaugeControl`, `DigitalDisplayControl`, `GridChartControl`, `SensorLabelControl`, `ComponentDebugPanel`, `ThemeSelector`, `SensorTreeSelector`, `ColorPalettePopup` |
 | 值转换器 | `Converters/BoolToVisibilityConverter.cs` |
+| 主题编辑器 | `Views/ThemeEditorWindow.xaml/.cs` |
+| 单组件调试 | `Views/ComponentEditorWindow.xaml/.cs` |
+| 硬件选择 | `Views/HardwareSelectDialog.xaml/.cs` |
+| 主控制台 | `MainWindow.xaml/.cs`（双标签页：主题/调试） |
+| 渲染窗口 | `Views/RenderWindow.xaml/.cs` |
+| 主题选择组件 | `Controls/ThemeSelector.xaml/.cs` |
 
 已移除：`MonitorWindow`, `ComponentDemoWindow`。
 
@@ -66,27 +70,39 @@ genTask3 原计划组件有独立的 Width/Height，实际改为：
 
 `HardwareService.GetSensorTypeBounds()` 按传感器类型返回上下限，不直接使用 LHM 观测极值。
 
+### 6. 主控制台 + 渲染分离
+
+应用启动入口改为 `MainWindow`（控制台），从控制台呼出：
+- **主题编辑器**（`ThemeEditorWindow`）：编辑主题、添加/排列/配置组件
+- **渲染窗口**（`RenderWindow`）：纯渲染，全屏/窗口化，支持多显示器定位
+- **组件调试**（`ComponentEditorWindow`）：单组件属性调试
+
+### 7. 多显示器全屏
+
+渲染窗口全屏时使用 Win32 `SetWindowPos` 定位到目标显示器，避免 WPF `Left`/`Top` 设置时机导致的非主屏定位失败。
+
 ## 项目结构
 
 ```
 SensorPanelToo/
-├── agentPleaseRead.md         # AI 协作约定
-├── DOC/                           # 所有文档
-│   ├── project.md                 # ← 本文件
-│   ├── task3_SensorPanelToo.md    # Task 3 实现总结
-│   ├── GenTask/                   # 原始任务计划
-│   ├── Models/                    # 模型文档
-│   ├── Services/                  # 服务文档
-│   ├── Controls/                  # 控件文档
-│   ├── Converters/                # 转换器文档
-│   └── Views/                     # 视图文档
+├── agentPleaseRead.md            # AI 协作约定
+├── DOC/                          # 所有文档
+│   ├── project.md                # ← 本文件
+│   ├── task3_SensorPanelToo.md   # Task 3 实现总结
+│   ├── GenTask/                  # 原始任务计划
+│   ├── Models/                   # 模型文档
+│   ├── Services/                 # 服务文档
+│   ├── Controls/                 # 控件文档
+│   ├── Converters/               # 转换器文档
+│   └── Views/                    # 视图文档
 ├── Models/
 │   ├── SensorValue.cs
-│   ├── Component.cs               # 组件基类
+│   ├── Component.cs              # 组件基类
 │   ├── ProgressBarComponent.cs
 │   ├── CircularGaugeComponent.cs
 │   ├── DigitalDisplayComponent.cs
 │   ├── GridChartComponent.cs
+│   ├── SensorLabelComponent.cs
 │   └── DashboardConfig.cs
 ├── Services/
 │   ├── HardwareService.cs
@@ -96,20 +112,26 @@ SensorPanelToo/
 │   ├── CircularGaugeControl.xaml/.cs
 │   ├── DigitalDisplayControl.xaml/.cs
 │   ├── GridChartControl.xaml/.cs
+│   ├── SensorLabelControl.xaml/.cs
+│   ├── ComponentDebugPanel.xaml/.cs
+│   ├── ThemeSelector.xaml/.cs
 │   ├── SensorTreeSelector.xaml/.cs
 │   └── ColorPalettePopup.xaml/.cs
 ├── Converters/
 │   └── BoolToVisibilityConverter.cs
 ├── Views/
-│   └── ComponentEditorWindow.xaml/.cs
+│   ├── ThemeEditorWindow.xaml/.cs     # 主题编辑器
+│   ├── ComponentEditorWindow.xaml/.cs # 单组件调试
+│   ├── RenderWindow.xaml/.cs          # 纯渲染窗口
+│   └── HardwareSelectDialog.xaml/.cs  # 硬件选择
 ├── SensorPanelToo.Tests/
 │   └── HardwareServiceTests.cs
-├── MainWindow.xaml/.cs             # 占位（后续改为编辑器入口）
+├── MainWindow.xaml/.cs            # 主控制台（应用入口）
 └── App.xaml/.cs
 ```
 
 ## 文档约定
 
-参见 `DOC/agentPleaseRead.md`：
+参见 `agentPleaseRead.md`：
 - 每个 `.cs` 类对应一个 `DOC/` 下的 `.md` 文档
 - `.md` 是理解类的首选入口，源码仅用于确认细节

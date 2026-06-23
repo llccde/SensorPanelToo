@@ -26,6 +26,8 @@
 ## 关键设计决策
 - 使用 `OnRender` + `DrawingContext` 自绘，不创建子控件树，性能更好
 - 弧形使用 `StreamGeometry` + `ArcTo`，通过 `DrawingContext.DrawGeometry` 渲染
+- 轨道弧由 `TrackColor`/`HideTrack` 控制，`HideTrack = true` 时完全隐藏背景弧
+- `sweepAngle >= 360°` 时自动切换为 `DrawEllipse` 绘制完整圆形（`ArcTo` 起点终点重合无法绘制）
 - 角度系统：WPF 坐标（0°=3点方向，顺时针），`StartAngle = -135` 默认从左上角开始
 - 指针从中心画线到环形边缘，中心点用实心圆表示
 - `NeedleStyle` 枚举预留但当前版本统一绘制实线指针

@@ -11,7 +11,7 @@
 - `System.Text.Json`（JsonDerivedType 多态序列化）
 
 ## 被谁使用
-- `ProgressBarComponent`, `CircularGaugeComponent`, `DigitalDisplayComponent`, `GridChartComponent` —— 派生
+- `ProgressBarComponent`, `CircularGaugeComponent`, `DigitalDisplayComponent`, `GridChartComponent`, `SensorLabelComponent` —— 派生
 - `DashboardConfig` —— 持有 `List<Component>`
 - 各渲染控件 —— 通过 `ComponentData` DP 读取配置
 
@@ -34,20 +34,21 @@
 
 ### 枚举
 
-`ComponentType`：ProgressBar, CircularGauge, DigitalDisplay, GridChart
+`ComponentType`：ProgressBar, CircularGauge, DigitalDisplay, GridChart, SensorLabel
 
 ### 已从基类移除（按组件独立）
 
 | 属性 | 所在组件 |
 |------|---------|
-| `BorderThickness`, `BorderColor` | ProgressBar, DigitalDisplay |
-| `Roundness` | ProgressBar, DigitalDisplay |
+| `BorderThickness`, `BorderColor` | ProgressBar |
+| `Roundness` | ProgressBar |
 
 ## 关键设计决策
 - 颜色均用 string/HEX 存储，序列化友好
 - `Scale` 不再改变 Width/Height 属性，而是通过 `RenderTransform = ScaleTransform(Scale, Scale)` 对渲染输出做整体缩放
 - 每种组件有固定基础尺寸（如 ProgressBar 300×40），Scale=1.0 即基础尺寸
 - 边框和圆角仅对矩形组件有意义，移至具体组件类
+- 使用 `[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]` + `[JsonDerivedType]` 实现多态序列化
 
 ## 示例
 ```csharp

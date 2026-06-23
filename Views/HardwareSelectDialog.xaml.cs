@@ -9,12 +9,37 @@ public partial class HardwareSelectDialog : Window
     public HardwareSelectDialog()
     {
         InitializeComponent();
+        LoadCurrentState();
+    }
+
+    void LoadCurrentState()
+    {
+        if (HardwareService.Instance.IsRunning)
+        {
+            ChkCpu.IsChecked = HardwareService.Instance.IsCpuEnabled;
+            ChkGpu.IsChecked = HardwareService.Instance.IsGpuEnabled;
+            ChkMemory.IsChecked = HardwareService.Instance.IsMemoryEnabled;
+            ChkMotherboard.IsChecked = HardwareService.Instance.IsMotherboardEnabled;
+            ChkNetwork.IsChecked = HardwareService.Instance.IsNetworkEnabled;
+            ChkStorage.IsChecked = HardwareService.Instance.IsStorageEnabled;
+            ChkController.IsChecked = HardwareService.Instance.IsControllerEnabled;
+        }
+        else
+        {
+            ChkCpu.IsChecked = true;
+            ChkMemory.IsChecked = true;
+            ChkGpu.IsChecked = false;
+            ChkStorage.IsChecked = false;
+            ChkMotherboard.IsChecked = false;
+            ChkNetwork.IsChecked = false;
+            ChkController.IsChecked = false;
+        }
     }
 
     private void StartBtn_Click(object sender, RoutedEventArgs e)
     {
         StartBtn.IsEnabled = false;
-        StartBtn.Content = "Starting...";
+        StartBtn.Content = "启动中…";
 
         try
         {
@@ -29,7 +54,7 @@ public partial class HardwareSelectDialog : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Failed: {ex.Message}", "Error",
+            MessageBox.Show($"启动失败：{ex.Message}", "错误",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
@@ -45,7 +70,7 @@ public partial class HardwareSelectDialog : Window
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Failed: {ex.Message}", "Error",
+            MessageBox.Show($"启动失败：{ex.Message}", "错误",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 

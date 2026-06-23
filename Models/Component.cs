@@ -7,13 +7,16 @@ public enum ComponentType
     ProgressBar,
     CircularGauge,
     DigitalDisplay,
-    GridChart
+    GridChart,
+    SensorLabel
 }
 
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
 [JsonDerivedType(typeof(ProgressBarComponent), typeDiscriminator: "ProgressBar")]
 [JsonDerivedType(typeof(CircularGaugeComponent), typeDiscriminator: "CircularGauge")]
 [JsonDerivedType(typeof(DigitalDisplayComponent), typeDiscriminator: "DigitalDisplay")]
 [JsonDerivedType(typeof(GridChartComponent), typeDiscriminator: "GridChart")]
+[JsonDerivedType(typeof(SensorLabelComponent), typeDiscriminator: "SensorLabel")]
 public class Component
 {
     public Guid Id { get; set; } = Guid.NewGuid();

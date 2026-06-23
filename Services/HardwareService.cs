@@ -34,6 +34,13 @@ public sealed class HardwareService : IDisposable
 
     public event Action? SensorsUpdated;
     public bool IsRunning => _isRunning;
+    public bool IsCpuEnabled => _cpu;
+    public bool IsGpuEnabled => _gpu;
+    public bool IsMemoryEnabled => _memory;
+    public bool IsMotherboardEnabled => _motherboard;
+    public bool IsNetworkEnabled => _network;
+    public bool IsStorageEnabled => _storage;
+    public bool IsControllerEnabled => _controller;
 
     private HardwareService() { }
 

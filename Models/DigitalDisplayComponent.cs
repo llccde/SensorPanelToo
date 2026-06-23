@@ -14,6 +14,7 @@ public class DigitalDisplayComponent : Component
     public string StrokeColor { get; set; } = "#CCCCCC";
     public double StrokeThickness { get; set; } = 1;
     public FontWeightOption FontWeight { get; set; } = FontWeightOption.Bold;
+    public int LineCount { get; set; } = 1;
 
     public double BaseWidth => 250;
     public double BaseHeight => 80;

@@ -1,36 +1,20 @@
 # ColorPalettePopup
 
 ## 作用
-取色板弹出控件，继承 `Popup`，提供预设调色盘 + HEX 输入。
+预设调色盘取色器 Popup，90 色网格 + HEX 输入。已被 `ColorPickerPopup` 替代为编辑器默认取色器，保留作为快速取色备选。
 
 ## 职责边界
 - 负责：显示颜色网格、接收用户选择、输出 HEX 字符串
-- 不负责：取色后的应用逻辑（由父窗口处理 `ColorSelected` 事件）
+- 不负责：取色后的应用逻辑
 
-## 依赖
-- `System.Windows.Controls.Primitives.Popup`
-
-## 被谁使用
-- `ComponentEditorWindow` —— 颜色输入框获得焦点时弹出
-
-## 公开 API
-
-| 成员 | 签名 | 说明 |
-|------|------|------|
-| `ColorSelected` | `event Action<string>?` | 用户选择颜色时触发，参数为 HEX 字符串（含 #） |
-| `SetCurrentColor(string hex)` | `void` | 弹出前设置当前颜色到 HEX 框和预览块 |
-
-## 关键设计决策
-- 继承 `Popup`（非 `UserControl`），`StaysOpen="True"`，由父窗口手动管理开关
-- 90 种预设颜色分 10 列网格排列（含灰度系）
-- 底部 HEX 输入框支持回车提交
-- 点击颜色 → 触发 `ColorSelected` → 关闭 Popup
+## 当前状态
+- **已被替代**：`ThemeEditorWindow` 和 `ComponentDebugPanel` 已改用 `ColorPickerPopup`（HSV 色盘）
+- **仍保留**：作为可用的预设取色器组件，可在其他场景使用
 
 ## 示例
 ```csharp
 var popup = new ColorPalettePopup();
 popup.ColorSelected += hex => targetBox.Text = hex;
-popup.SetCurrentColor("#FF6644");
 popup.PlacementTarget = targetBox;
 popup.IsOpen = true;
 ```
